@@ -2,7 +2,7 @@
 
 const http = require('http');
 const express = require('express');
-const socket_io = require('socket_io');
+const socket_io = require('socket.io');
 
 const app = express();
 app.use(express.static('public'));
