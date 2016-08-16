@@ -19,7 +19,7 @@ gulp.task('clean:css', () => {
 });
 
 gulp.task('clean:js', () => {
-     return del(['public/*.js', './*.js']);
+     return del(['public/main.js', 'server.js']);
 });
 
 /**
@@ -60,7 +60,7 @@ gulp.task('server-js', ['main-js'], () => {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(gulp.dest('./server.js'));
+        .pipe(gulp.dest('./'));
 });
 
 /**
@@ -75,4 +75,4 @@ gulp.task('watch', () => {
 });
 
 // Default task that runs everything
-gulp.task('default', ['add-index', 'add-css', 'main-js', 'server.js']);
+gulp.task('default', ['add-index', 'add-css', 'main-js', 'server-js']);
