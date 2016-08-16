@@ -1,0 +1,30 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    color: #1E2835;
+    background-color: #F8F8F8;
+    font-size: 1.5em;
+}
+
+h1 {
+    background-color: #9ABBFF;
+    margin:  0 0 20px 0;
+    padding: 20px;
+    text-align: center;
+}
+
+#top-message {
+    text-align: center;
+    padding: 10px;
+}
+
+canvas {
+    width: 800px;
+    height: 600px;
+    border: 1px #C7CACD solid;
+    display: block;
+    margin: 0 auto;
+}
