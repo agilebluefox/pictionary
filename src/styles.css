@@ -39,8 +39,16 @@ h1 {
     display: none;
 }
 
-#word {
+#current-guess {
+    color: blue;
+}
+
+#current-word {
     display: none;
+}
+
+#word {
+    color: red;
 }
 
 #correct-guess {

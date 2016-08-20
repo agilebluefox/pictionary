@@ -54,14 +54,17 @@ var pictionary = function pictionary() {
     }
 
     // Get the targets for the drawer interface
-    var $currentWord = $('#word');
+    var $currentWord = $('#current-word');
+    var $word = $('#word');
     var $correctGuess = $('#correct-guess');
+    var $response = $('input[name=response]:radio');
 
     // Get the target for the guess
     var $guessBox = $('#guess');
     var $guessInput = $('#guess input');
     // Get the target to store the last guess
     var $lastGuess = $('#last-guess');
+    var $currentGuess = $('#current-guess');
 
     $canvas = $('#canvas');
     $context = $canvas[0].getContext('2d');
@@ -74,64 +77,89 @@ var pictionary = function pictionary() {
         $context.fill();
     };
 
-    socket.on('new user', function (data) {
+    var useDrawFunctions = function useDrawFunctions() {
+        $guessBox.hide();
+        $guessInput.hide();
+        $currentWord.show();
+        $correctGuess.show();
+
+        // Set drawing to true when the mouse is down
+        $canvas.on('mousedown', function () {
+            drawing = true;
+        });
+
+        // Set drawing to false when the mouse is up
+        $canvas.on('mouseup', function () {
+            drawing = false;
+        });
+
+        // Draw when the mouse is pressed and moved around the canvas
+        $canvas.on('mousemove', function (event) {
+
+            if (drawing) {
+
+                var offset = $canvas.offset();
+                var position = {
+                    x: event.pageX - offset.left,
+                    y: event.pageY - offset.top
+                };
+                draw(position);
+                // Send the position data with the draw event
+                socket.emit('draw', position);
+            }
+        });
+
+        // If the guess is correct, the game is over
+        $response.on('click', function () {
+            console.log($("input:checked").val());
+            if ($("input:checked").val() === 'yes') {
+                socket.emit('correct guess');
+            } else {
+
+                return;
+            }
+        });
+    };
+
+    var useGuessFunctions = function useGuessFunctions() {
+        $currentWord.hide();
+        $correctGuess.hide();
+        $guessBox.show();
+        $guessInput.show();
+
+        var onKeyDown = function onKeyDown(event) {
+            if (event.keyCode != 13) {
+                return;
+            }
+            var guess = $guessInput.val();
+            // Send the guess to everyone
+            socket.emit('guess', guess);
+            $guessInput.val('');
+        };
+        $guessInput.on('keydown', onKeyDown);
+    };
+
+    socket.on('set role', function (data) {
         $lastGuess.show();
-        console.log(data.role);
+        socket.role = data.role;
+        console.log(socket.role);
 
-        if (data.role === 'draw') {
+        if (socket.role === 'draw') {
 
-            $currentWord.show();
-            $correctGuess.show();
+            useDrawFunctions();
+        } else if (socket.role === 'guess') {
 
-            // Set drawing to true when the mouse is down
-            $canvas.on('mousedown', function () {
-                drawing = true;
-            });
-
-            // Set drawing to false when the mouse is up
-            $canvas.on('mouseup', function () {
-                drawing = false;
-            });
-
-            // Draw when the mouse is pressed and moved around the canvas
-            $canvas.on('mousemove', function (event) {
-
-                if (drawing) {
-
-                    var offset = $canvas.offset();
-                    var position = {
-                        x: event.pageX - offset.left,
-                        y: event.pageY - offset.top
-                    };
-                    draw(position);
-                    // Send the position data with the draw event
-                    socket.emit('draw', position);
-                }
-            });
-        } else if (data.role === 'guess') {
-
-            $guessBox.show();
-            $guessInput.show();
-
-            var onKeyDown = function onKeyDown(event) {
-                if (event.keyCode != 13) {
-                    return;
-                }
-                var guess = $guessInput.val();
-                // Send the guess to everyone
-                socket.emit('guess', guess);
-                $guessInput.val('');
-            };
-            $guessInput.on('keydown', onKeyDown);
+            useGuessFunctions();
         } else {
             console.log('Role not assigned properly!');
         }
     });
+
     // When a guess is received, log it to the display ...
     socket.on('guess', function (guess) {
         // ... and console
         console.log(guess);
-        $lastGuess.text(guess);
+        $currentGuess.text(guess);
     });
 
     // Draw the data received from other clients

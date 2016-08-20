@@ -46,7 +46,7 @@ io.on('connection', function (socket) {
         ++connections;
         logConnections(connections);
         callback({ isValid: true});
-        socket.emit('new user', {role: role});
+        socket.emit('set role', {role: role});
     });
 
     // Broadcast the data to all connected clients when someone is drawing
@@ -59,8 +59,14 @@ io.on('connection', function (socket) {
         io.emit('guess', guess);
     });
 
+    socket.on('correct guess', function() {
+        console.log('The last guess is correct - Game Over!');
+    });
+
     socket.on('disconnect', function () {
         if (!socket.username) return;
+        let role = socket.role;
+        console.log(`${socket.username}'s role is ${socket.role}`);
 
         // decrement the number of connections
         --connections;
@@ -70,13 +76,24 @@ io.on('connection', function (socket) {
         // it has and if the socket is a guesser, remove the socket from
         // the players object. If a drawer, grab the first guesser
         // from the players object and make it the drawer.
-        if (socket.role === 'draw') {
-            drawer = false;
-        } 
-
         delete players[socket.username];
-        io.emit('remove user', Object.keys(players));
 
+        if (role === 'draw') {
+            // Get the next guesser and make that user the one who draws
+            for (let player in players) {
+                console.log(players[player].role);
+                if (players[player].role === 'guess') {
+                    console.log('In the loop');
+                    players[player].role = 'draw';
+                    players[player].emit('set role', {role: 'draw'});
+                    console.log(`${players[player].username} is the new drawer!`);
+                    break;
+                }
+            }
+        }
+
+        // io.emit('remove user', Object.keys(players));
+        console.log(Object.keys(players));
         console.log(`${socket.username} has left the game`);
     });
 });
