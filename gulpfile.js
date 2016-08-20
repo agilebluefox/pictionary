@@ -29,7 +29,6 @@ gulp.task('clean:js', () => {
 // Add the index file to the public directory
 gulp.task('add-index', ['clean:html'], () => {
     return gulp.src('./src/index.html')
-    // .pipe(watch('./src/index.html'))
     .pipe(gulp.dest('public/'));
 });
 
