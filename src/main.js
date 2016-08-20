@@ -27,6 +27,7 @@ let pictionary = function () {
             } else {
                 return;
             }
+            $window.off('keydown');
         }
     });
 
@@ -39,8 +40,8 @@ let pictionary = function () {
             if (data.isValid) {
                 $loginPage.fadeOut();
                 $main.show();
-                // $loginPage.off('click');
-                // $loginPage.off('keydown');
+                $loginPage.off('click');
+                $loginPage.off('keydown');
 
             } else {
                 username = null;

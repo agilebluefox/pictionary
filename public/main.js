@@ -28,6 +28,7 @@ var pictionary = function pictionary() {
             } else {
                 return;
             }
+            $window.off('keydown');
         }
     });
 
@@ -40,8 +41,8 @@ var pictionary = function pictionary() {
             if (data.isValid) {
                 $loginPage.fadeOut();
                 $main.show();
-                // $loginPage.off('click');
-                // $loginPage.off('keydown');
+                $loginPage.off('click');
+                $loginPage.off('keydown');
             } else {
                 username = null;
                 $usernameInput.val('');
@@ -62,7 +63,7 @@ var pictionary = function pictionary() {
     // Get the target to store the last guess
     var $lastGuess = $('#last-guess');
 
-    $canvas = $('canvas');
+    $canvas = $('#canvas');
     $context = $canvas[0].getContext('2d');
     $canvas[0].width = $canvas[0].offsetWidth;
     $canvas[0].height = $canvas[0].offsetHeight;

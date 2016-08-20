@@ -1,39 +1,41 @@
 <!doctype html>
-<title>Pictionary</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<link rel="stylesheet" href="styles.css">
 
+<head>
+    <title>Pictionary</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<!--<body>-->
+<div id="main">
+    <h1>Pictionary</h1>
+    <div id="top-message">
+        <div id="word"></div>
+        <div id="last-guess">
+        </div>
+        <div id="guess">
+            Make a guess: <input type="text">
+        </div>
+        <div id="correct-guess">
+            <input type="radio" name='response' value='yes'><label>Correct</label>
+            <input type="radio" name='response' value='no' checked=true><label>Wrong</label>
+        </div>
+    </div>
+</div>
+<canvas id="canvas"></canvas>
+<div class="login-page">
+    <div class="form">
+        <h3 class="title">Choose a username.</h3>
+        <h2 class="error"></h2>
+        <input class="usernameInput" type="text" maxlength="14" />
+    </div>
+</div>
 <!-- JS -->
 <script src="//code.jquery.com/jquery-2.1.0.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="main.js"></script>
-
-<body>
-    <div id="main">
-        <h1>Pictionary</h1>
-        <div id="top-message">
-            <div id="word"></div>
-            <div id="last-guess">
-            </div>
-            <div id="guess">
-                Make a guess: <input type="text">
-            </div>
-            <div id="correct-guess">
-                <input type="radio" name='response' value='yes'><label>Correct</label>
-                <input type="radio" name='response' value='no' checked=true><label>Wrong</label>
-            </div>
-        </div>
-        <canvas id="canvas"></canvas>
-    </div>
-    <div class="login-page">
-        <div class="form">
-            <h3 class="title">Choose a username.</h3>
-            <h2 class="error"></h2>
-            <input class="usernameInput" type="text" maxlength="14" />
-        </div>
-    </div>
-</body>
+<!--</body>-->
 
 </html>
