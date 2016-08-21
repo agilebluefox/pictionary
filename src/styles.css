@@ -51,10 +51,6 @@ h1 {
     color: red;
 }
 
-#correct-guess {
-    display: none;
-}
-
 canvas {
     width: 800px;
     height: 600px;

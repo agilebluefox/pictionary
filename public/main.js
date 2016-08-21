@@ -57,7 +57,6 @@ var pictionary = function pictionary() {
     var $currentWord = $('#current-word');
     var $word = $('#word');
     var $correctGuess = $('#correct-guess');
-    var $response = $('input[name=response]:radio');
 
     // Get the target for the guess
     var $guessBox = $('#guess');
@@ -90,7 +89,6 @@ var pictionary = function pictionary() {
         $guessInput.hide();
         $currentWord.show();
         $word.text(word);
-        $correctGuess.show();
 
         // Set drawing to true when the mouse is down
         $canvas.on('mousedown', function () {
@@ -118,21 +116,20 @@ var pictionary = function pictionary() {
             }
         });
 
-        // If the guess is correct, the game is over
-        $response.on('click', function () {
-            console.log($("input:checked").val());
-            if ($("input:checked").val() === 'yes') {
-                socket.emit('correct guess');
-            } else {
+        // // If the guess is correct, the game is over
+        // $response.on('click', function () {
+        //     console.log($("input:checked").val());
+        //     if ($("input:checked").val() === 'yes') {
+        //         socket.emit('correct guess');
+        //     } else {
 
-                return;
-            }
-        });
+        //         return;
+        //     }
+        // });
     };
 
     var useGuessFunctions = function useGuessFunctions() {
         $currentWord.hide();
-        $correctGuess.hide();
         $guessBox.show();
         $guessInput.show();
 
@@ -149,7 +146,7 @@ var pictionary = function pictionary() {
     };
 
     socket.on('set role', function (data) {
-        $lastGuess.show();
+        resetGame();
         socket.role = data.role;
         console.log(socket.role);
 
@@ -177,6 +174,14 @@ var pictionary = function pictionary() {
     });
 
     // Add method of checking to see if the guess is correct
+    socket.on('winner', function (data) {
+        $correctGuess.html(data.winner + ' selected the winning word: ' + data.word);
+    });
+
+    var resetGame = function resetGame() {
+        $currentGuess.html('');
+        $correctGuess.html('');
+    };
 };
 
 $(document).ready(function () {

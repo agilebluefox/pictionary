@@ -57,7 +57,6 @@ let pictionary = function () {
     let $currentWord = $('#current-word');
     let $word = $('#word');
     let $correctGuess = $('#correct-guess');
-    let $response = $('input[name=response]:radio');
 
     // Get the target for the guess
     let $guessBox = $('#guess');
@@ -91,7 +90,6 @@ let pictionary = function () {
         $guessInput.hide();
         $currentWord.show();
         $word.text(word);
-        $correctGuess.show();
 
         // Set drawing to true when the mouse is down
         $canvas.on('mousedown', function () {
@@ -121,22 +119,20 @@ let pictionary = function () {
             }
         });
 
+        // // If the guess is correct, the game is over
+        // $response.on('click', function () {
+        //     console.log($("input:checked").val());
+        //     if ($("input:checked").val() === 'yes') {
+        //         socket.emit('correct guess');
+        //     } else {
 
-        // If the guess is correct, the game is over
-        $response.on('click', function () {
-            console.log($("input:checked").val());
-            if ($("input:checked").val() === 'yes') {
-                socket.emit('correct guess');
-            } else {
-
-                return;
-            }
-        });
+        //         return;
+        //     }
+        // });
     };
 
     let useGuessFunctions = function () {
         $currentWord.hide();
-        $correctGuess.hide();
         $guessBox.show();
         $guessInput.show();
 
@@ -154,7 +150,7 @@ let pictionary = function () {
     };
 
     socket.on('set role', function (data) {
-        $lastGuess.show();
+        resetGame();
         socket.role = data.role;
         console.log(socket.role);
 
@@ -183,9 +179,15 @@ let pictionary = function () {
         draw(position);
     });
 
-
     // Add method of checking to see if the guess is correct
+    socket.on('winner', function(data) {
+        $correctGuess.html(`${data.winner} selected the winning word: ${data.word}`);
+    });
 
+    let resetGame = function() {
+            $currentGuess.html('');
+            $correctGuess.html('');
+        }
 };
 
 $(document).ready(function () {
