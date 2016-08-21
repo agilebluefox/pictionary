@@ -14,6 +14,17 @@ let connections = 0; // Counter for the number of connections
 let drawer = false; // Boolean for the drawer
 let players = {}; // Store the sockets for the players
 
+let pickWord = function () {
+    const WORDS = [
+        "word", "letter", "number", "person", "pen", "class", "people",
+        "sound", "water", "side", "place", "man", "men", "woman", "women", "boy", "girl", "year", "day", "week", "month", "name", "sentence", "line", "air", "land", "home", "hand", "house", "picture", "animal", "mother", "father", "brother", "sister", "world", "head", "page", "country", "question", "answer", "school", "plant", "food", "sun", "state", "eye", "city", "tree", "farm", "story", "sea", "night", "day", "life", "north", "south", "east", "west", "child", "children", "example", "paper", "music", "river", "car", "foot", "feet", "book", "science", "room", "friend", "idea", "fish", "mountain", "horse", "watch", "color", "face", "wood", "list", "bird", "body", "dog", "family", "song", "door", "product", "wind", "ship", "area", "rock", "order", "fire", "problem", "piece", "top", "bottom", "king", "space"
+    ];
+    let min = 0;
+    let max = WORDS.length;
+    let rand = Math.floor(Math.random() * (max - min) + min);
+    return WORDS[rand];
+};
+
 let logConnections = function (connections) {
     console.log(`Number of clents connected: ${connections}`);
 };
@@ -27,6 +38,7 @@ io.on('connection', function (socket) {
     // while subsequent clients become guessers
     socket.on('add user', function (username, callback) {
         let role = null;
+        let word = null;
         if (username in players) {
             callback({ isValid: false });
             return;
@@ -35,6 +47,7 @@ io.on('connection', function (socket) {
             socket.role = 'draw';
             console.log(`${username} is drawing`);
             drawer = true;
+            word = pickWord();
         } else {
             role = 'guess';
             socket.role = 'guess';
@@ -45,8 +58,8 @@ io.on('connection', function (socket) {
         console.log(Object.keys(players));
         ++connections;
         logConnections(connections);
-        callback({ isValid: true});
-        socket.emit('set role', {role: role});
+        callback({ isValid: true });
+        socket.emit('set role', { role: role, word: word });
     });
 
     // Broadcast the data to all connected clients when someone is drawing
@@ -59,7 +72,7 @@ io.on('connection', function (socket) {
         io.emit('guess', guess);
     });
 
-    socket.on('correct guess', function() {
+    socket.on('correct guess', function () {
         console.log('The last guess is correct - Game Over!');
     });
 
@@ -85,7 +98,8 @@ io.on('connection', function (socket) {
                 if (players[player].role === 'guess') {
                     console.log('In the loop');
                     players[player].role = 'draw';
-                    players[player].emit('set role', {role: 'draw'});
+                    let word = pickWord();
+                    players[player].emit('set role', { role: 'draw', word: word });
                     console.log(`${players[player].username} is the new drawer!`);
                     break;
                 }

@@ -70,6 +70,11 @@ var pictionary = function pictionary() {
     $context = $canvas[0].getContext('2d');
     $canvas[0].width = $canvas[0].offsetWidth;
     $canvas[0].height = $canvas[0].offsetHeight;
+
+    var clearCanvas = function clearCanvas() {
+        $context.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
+    };
+
     var draw = function draw(position) {
         $context.fillStyle = 'black';
         $context.beginPath();
@@ -77,10 +82,14 @@ var pictionary = function pictionary() {
         $context.fill();
     };
 
-    var useDrawFunctions = function useDrawFunctions() {
+    var useDrawFunctions = function useDrawFunctions(word) {
+        // Clear the canvas if a drawing exists
+        clearCanvas();
+
         $guessBox.hide();
         $guessInput.hide();
         $currentWord.show();
+        $word.text(word);
         $correctGuess.show();
 
         // Set drawing to true when the mouse is down
@@ -145,8 +154,8 @@ var pictionary = function pictionary() {
         console.log(socket.role);
 
         if (socket.role === 'draw') {
-
-            useDrawFunctions();
+            var word = data.word;
+            useDrawFunctions(word);
         } else if (socket.role === 'guess') {
 
             useGuessFunctions();
