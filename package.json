@@ -4,7 +4,8 @@
   "description": "App using Socket.IO to simulate the pictionary game online.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [
     "NodeJS",
@@ -23,5 +24,13 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-watch": "^4.3.9"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agilebluefox/pictionary.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agilebluefox/pictionary/issues"
+  },
+  "homepage": "https://github.com/agilebluefox/pictionary#readme"
 }
