@@ -38,11 +38,14 @@ var pictionary = function pictionary() {
         username = $usernameInput.val().trim();
 
         socket.emit('add user', username, function (data) {
+            // If the username is unique
             if (data.isValid) {
                 $loginPage.fadeOut();
                 $main.show();
+                // Remove the event handlers to prevent conflicts
                 $loginPage.off('click');
                 $loginPage.off('keydown');
+                // If the username already exists
             } else {
                 username = null;
                 $usernameInput.val('');
@@ -70,10 +73,6 @@ var pictionary = function pictionary() {
     $canvas[0].width = $canvas[0].offsetWidth;
     $canvas[0].height = $canvas[0].offsetHeight;
 
-    var clearCanvas = function clearCanvas() {
-        $context.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
-    };
-
     var draw = function draw(position) {
         $context.fillStyle = 'black';
         $context.beginPath();
@@ -82,7 +81,7 @@ var pictionary = function pictionary() {
     };
 
     var useDrawFunctions = function useDrawFunctions(word) {
-
+        // Set the interface for the drawer
         $guessBox.hide();
         $guessInput.hide();
         $currentWord.show();
@@ -127,10 +126,12 @@ var pictionary = function pictionary() {
     };
 
     var useGuessFunctions = function useGuessFunctions() {
+        // Set the interface for the guesser
         $currentWord.hide();
         $guessBox.show();
         $guessInput.show();
 
+        // If the enter key is pressed, send the guess
         var onKeyDown = function onKeyDown(event) {
             if (event.keyCode != 13) {
                 return;
@@ -143,6 +144,7 @@ var pictionary = function pictionary() {
         $guessInput.on('keydown', onKeyDown);
     };
 
+    // Set the player's role and provide the needed functions
     socket.on('set role', function (data) {
         socket.role = data.role;
         console.log(socket.role);
@@ -176,15 +178,13 @@ var pictionary = function pictionary() {
         $correctGuess.html(data.winner + ' wins! The word was ' + data.word);
     });
 
+    // Reset the interface and the canvas for each new game
     socket.on('new game', function () {
-        resetGame();
-        // Clear the canvas if a drawing exists
-        clearCanvas();
-    });
-
-    var resetGame = function resetGame() {
+        // Clear the guesses
         $currentGuess.html('');
-    };
+        // Clear the canvas if a drawing exists
+        $context.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
+    });
 };
 
 $(document).ready(function () {
