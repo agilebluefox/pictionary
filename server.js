@@ -72,6 +72,13 @@ io.on('connection', function (socket) {
             var username = socket.username;
             console.log(username + ' is the winner!');
             io.emit('winner', { winner: username, word: word });
+            players[drawer].role = 'guess';
+            players[drawer].emit('set role', { role: 'guess' });
+            players[username].role = 'draw';
+            word = pickWord();
+            players[username].emit('set role', { role: 'draw', word: word });
+            drawer = username;
+            io.emit('new game');
         }
     });
 
@@ -102,6 +109,7 @@ io.on('connection', function (socket) {
                     drawer = players[player].username;
                     word = pickWord();
                     players[player].emit('set role', { role: 'draw', word: word });
+                    io.emit('new game');
                     console.log(players[player].username + ' is the new drawer!');
                     break;
                 }

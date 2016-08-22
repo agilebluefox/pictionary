@@ -82,8 +82,6 @@ var pictionary = function pictionary() {
     };
 
     var useDrawFunctions = function useDrawFunctions(word) {
-        // Clear the canvas if a drawing exists
-        clearCanvas();
 
         $guessBox.hide();
         $guessInput.hide();
@@ -146,7 +144,6 @@ var pictionary = function pictionary() {
     };
 
     socket.on('set role', function (data) {
-        resetGame();
         socket.role = data.role;
         console.log(socket.role);
 
@@ -165,22 +162,28 @@ var pictionary = function pictionary() {
     socket.on('guess', function (guess) {
         // ... and console
         console.log(guess);
-        $currentGuess.text(guess);
+        $currentGuess.html(guess);
     });
 
     // Draw the data received from other clients
     socket.on('draw', function (position) {
+        $correctGuess.html('');
         draw(position);
     });
 
     // Add method of checking to see if the guess is correct
     socket.on('winner', function (data) {
-        $correctGuess.html(data.winner + ' selected the winning word: ' + data.word);
+        $correctGuess.html(data.winner + ' wins! The word was ' + data.word);
+    });
+
+    socket.on('new game', function () {
+        resetGame();
+        // Clear the canvas if a drawing exists
+        clearCanvas();
     });
 
     var resetGame = function resetGame() {
         $currentGuess.html('');
-        $correctGuess.html('');
     };
 };
 

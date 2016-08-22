@@ -37,12 +37,14 @@ let pictionary = function () {
         username = $usernameInput.val().trim();
 
         socket.emit('add user', username, function (data) {
+            // If the username is unique
             if (data.isValid) {
                 $loginPage.fadeOut();
                 $main.show();
+                // Remove the event handlers to prevent conflicts
                 $loginPage.off('click');
                 $loginPage.off('keydown');
-
+                // If the username already exists
             } else {
                 username = null;
                 $usernameInput.val('');
@@ -65,15 +67,10 @@ let pictionary = function () {
     let $lastGuess = $('#last-guess');
     let $currentGuess = $('#current-guess');
 
-
     $canvas = $('#canvas');
     $context = $canvas[0].getContext('2d');
     $canvas[0].width = $canvas[0].offsetWidth;
     $canvas[0].height = $canvas[0].offsetHeight;
-
-    let clearCanvas = function() {
-        $context.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
-    };
 
     let draw = function (position) {
         $context.fillStyle = 'black';
@@ -83,9 +80,7 @@ let pictionary = function () {
     };
 
     let useDrawFunctions = function (word) {
-        // Clear the canvas if a drawing exists
-        clearCanvas();
-
+        // Set the interface for the drawer
         $guessBox.hide();
         $guessInput.hide();
         $currentWord.show();
@@ -132,11 +127,12 @@ let pictionary = function () {
     };
 
     let useGuessFunctions = function () {
+        // Set the interface for the guesser
         $currentWord.hide();
         $guessBox.show();
         $guessInput.show();
 
-
+        // If the enter key is pressed, send the guess
         let onKeyDown = function (event) {
             if (event.keyCode != 13) {
                 return;
@@ -149,8 +145,8 @@ let pictionary = function () {
         $guessInput.on('keydown', onKeyDown);
     };
 
+    // Set the player's role and provide the needed functions
     socket.on('set role', function (data) {
-        resetGame();
         socket.role = data.role;
         console.log(socket.role);
 
@@ -171,23 +167,28 @@ let pictionary = function () {
     socket.on('guess', function (guess) {
         // ... and console
         console.log(guess);
-        $currentGuess.text(guess);
+        $currentGuess.html(guess);
     });
 
     // Draw the data received from other clients
     socket.on('draw', function (position) {
+        $correctGuess.html('');
         draw(position);
     });
 
     // Add method of checking to see if the guess is correct
-    socket.on('winner', function(data) {
-        $correctGuess.html(`${data.winner} selected the winning word: ${data.word}`);
+    socket.on('winner', function (data) {
+        $correctGuess.html(`${data.winner} wins! The word was ${data.word}`);
     });
 
-    let resetGame = function() {
-            $currentGuess.html('');
-            $correctGuess.html('');
-        }
+    // Reset the interface and the canvas for each new game
+    socket.on('new game', function () {
+        // Clear the guesses
+        $currentGuess.html('');
+        // Clear the canvas if a drawing exists
+        $context.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
+    });
+
 };
 
 $(document).ready(function () {

@@ -39,26 +39,31 @@ io.on('connection', function (socket) {
     // while subsequent clients become guessers
     socket.on('add user', function (username, callback) {
         let role = null;
+        // If the username exists send an error
         if (username in players) {
             callback({ isValid: false });
             return;
+            // If there isn't a drawer, this player becomes the drawer
         } else if (!drawer) {
             role = 'draw';
             socket.role = 'draw';
             console.log(`${username} is drawing`);
             drawer = username;
             word = pickWord();
+            // If a drawer exists, make the player a guesser
         } else {
             role = 'guess';
             socket.role = 'guess';
             console.log(`${username} is guessing`);
         }
+        // Store the username and role on the socket object
         socket.username = username;
         players[socket.username] = socket;
         console.log(Object.keys(players));
         ++connections;
         logConnections(connections);
         callback({ isValid: true });
+        // Send the role to be stored on the client object too
         socket.emit('set role', { role: role, word: word });
     });
 
@@ -70,10 +75,25 @@ io.on('connection', function (socket) {
     socket.on('guess', function (guess) {
         // place the last guess on the display for everyone to see
         io.emit('guess', guess);
+
+        // Check the guess to see if it's correct
         if (guess === word) {
+            // Get the username of the winner
             let username = socket.username;
             console.log(`${username} is the winner!`);
-            io.emit('winner', { winner: username, word: word});
+            // Announce the winner and the word
+            io.emit('winner', { winner: username, word: word });
+
+            // Update the roles of the players
+            players[drawer].role = 'guess';
+            players[drawer].emit('set role', { role: 'guess' });
+            players[username].role = 'draw';
+            // Get a new word to draw
+            word = pickWord();
+            players[username].emit('set role', { role: 'draw', word: word });
+            drawer = username;
+            // Reset the game
+            io.emit('new game');
         }
     });
 
@@ -102,8 +122,11 @@ io.on('connection', function (socket) {
                     console.log('In the loop');
                     players[player].role = 'draw';
                     drawer = players[player].username;
+                    // Get a new word
                     word = pickWord();
                     players[player].emit('set role', { role: 'draw', word: word });
+                    // Start a new game with the new drawer
+                    io.emit('new game');
                     console.log(`${players[player].username} is the new drawer!`);
                     break;
                 }
