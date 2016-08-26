@@ -155,8 +155,9 @@ let pictionary = function () {
             useDrawFunctions(word);
 
         } else if (socket.role === 'guess') {
-
+            $canvas.off('mousedown');
             useGuessFunctions();
+
 
         } else {
             console.log('Role not assigned properly!');
